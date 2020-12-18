@@ -45,10 +45,24 @@ function connect() {
 window.addEventListener('message', ({ data }) => {
   if (data.neopixels) {
     const { neopixels } = data;
+
+    /*
+      The data format depends on the part type:
+      - For wokwi-neopixel-strip, we simply get an array with the RGBA values.
+      - For wokwi-neopixel-matrix, we get an object with the following fields:
+        {
+          pixels: Uint32Array;   // rows*cols entries
+          rows: number;
+          cols: number;
+          layout: string;        // '' or 'serpentine'
+          brightness: number;    // 1.0 for normal brightness
+        }
+    */
+    const pixels = neopixels.pixels || neopixels;
     if (socket) {
-      const bytes = new Uint8Array(neopixels.length * 3);
-      for (let i = 0; i < neopixels.length; i++) {
-        const value = neopixels[i];
+      const bytes = new Uint8Array(pixels.length * 3);
+      for (let i = 0; i < pixels.length; i++) {
+        const value = pixels[i];
         const b = value & 0xff;
         const r = (value >> 8) & 0xff;
         const g = (value >> 16) & 0xff;
