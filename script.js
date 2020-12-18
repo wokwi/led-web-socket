@@ -28,6 +28,7 @@ function connect() {
   socket = new WebSocket(url);
   socket.onopen = () => {
     updateStatus('Connected!', 'status-ok');
+    parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, 'https://wokwi.com');
   };
   socket.onclose = (e) => {
     if (socket) {
@@ -40,7 +41,6 @@ function connect() {
     socket = null;
   };
 }
-parent.postMessage({ app: 'wokwi', command: 'listen', version: 1 }, 'https://wokwi.com');
 
 window.addEventListener('message', ({ data }) => {
   if (data.neopixels) {
